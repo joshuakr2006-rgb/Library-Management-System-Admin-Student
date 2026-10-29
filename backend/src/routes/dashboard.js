@@ -1,0 +1,3 @@
+const router=require('express').Router();const auth=require('../middleware/auth');const requireRole=require('../middleware/requireRole');const Book=require('../models/Book');const Member=require('../models/Member');const Transaction=require('../models/Transaction');
+router.get('/',auth,requireRole('admin'),async(req,res,next)=>{try{const [totalBookTitles,totalMembers,issuedBooks,books]=await Promise.all([Book.countDocuments(),Member.countDocuments(),Transaction.countDocuments({status:'issued'}),Book.find().select('availableCopies')]);res.json({totalBookTitles,totalMembers,issuedBooks,availableCopies:books.reduce((n,b)=>n+b.availableCopies,0)});}catch(e){next(e);}});
+module.exports=router;
